@@ -10,21 +10,27 @@ app.use(cors());
 
 app.use(express.json());
 
+const isDev = process.env.NODE_ENV === 'development';
+
 app.use(
-  pino({
-    level: 'info',
-    transport: {
-      target: 'pino-pretty',
-      options: {
-        colorize: true,
-        translateTime: 'HH:MM:ss',
-        ignore: 'pid,hostname',
-        messageFormat:
-          '{req.method} {req.url} {res.statusCode} - {responseTime}ms',
-        hideObject: true,
-      },
-    },
-  }),
+  pino(
+    isDev
+      ? {
+          level: 'info',
+          transport: {
+            target: 'pino-pretty',
+            options: {
+              colorize: true,
+              translateTime: 'HH:MM:ss',
+              ignore: 'pid,hostname',
+              messageFormat:
+                '{req.method} {req.url} {res.statusCode} - {responseTime}ms',
+              hideObject: true,
+            },
+          },
+        }
+      : { level: 'info' }
+  )
 );
 
 app.get('/notes', (req, res) => {
