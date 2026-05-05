@@ -1,62 +1,39 @@
 import express from 'express';
 import 'dotenv/config';
-import pino from 'pino-http';
 import cors from 'cors';
+
+import { connect } from 'mongoose';
+import { connectMongoDB } from './db/connectMongoDB.js';
+import logger from './middleware/logger.js';
+import { notFoundHandler } from './middleware/notFoundHandler.js';
+import { errorHandler } from './middleware/errorHandler.js';
+import notesRoutes from './routes/notesRoutes.js';
 
 const app = express();
 const PORT = process.env.PORT ?? 3000;
 
-app.use(cors());
+// Middleware
+app.use(logger);
 
-app.use(express.json());
+app.use(express.json({
+   type: ['application/json', 'application/vnd.api+json'],
+  limit: '100kb',
+}));
+app.use(cors({
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  origin: '*',
+}));
 
-const isDev = process.env.NODE_ENV === 'development';
 
-app.use(
-  pino(
-    isDev
-      ? {
-          level: 'info',
-          transport: {
-            target: 'pino-pretty',
-            options: {
-              colorize: true,
-              translateTime: 'HH:MM:ss',
-              ignore: 'pid,hostname',
-              messageFormat:
-                '{req.method} {req.url} {res.statusCode} - {responseTime}ms',
-              hideObject: true,
-            },
-          },
-        }
-      : { level: 'info' }
-  )
-);
 
-app.get('/notes', (req, res) => {
-  res.status(200).json({ message: 'Retrieved all notes' });
-});
-app.get('/notes/:noteId', (req, res) => {
-  const { noteId } = req.params;
-  res.status(200).json({ message: `Retrieved note with ID: ${noteId}` });
-});
 
-app.get('/test-error', () => {
-  throw new Error('Simulated server error');
-});
+app.use("/notes",notesRoutes);
+app.use(notFoundHandler);
+app.use(errorHandler);
 
-app.use((req, res) => {
-  res.status(404).json({ message: 'Route not found' });
-});
 
-app.use((err, req, res, next) => {
-  console.error(err);
-
-  res.status(500).json({
-    message: err.message,
-  });
-});
+await connectMongoDB();
 
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+  console.log(`Server is running on localhost:${process.env.PORT}`);
 });
