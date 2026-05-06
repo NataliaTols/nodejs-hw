@@ -9,7 +9,8 @@ const noteSchema = new Schema({
     },
     content: {
         trim: true,
-        type: String
+        type: String,
+        required: true,
     },
     tag: {
         type: String,
@@ -19,4 +20,4 @@ const noteSchema = new Schema({
 }
     , { timestamps: true }
 );
-export const Notes = mongoose.model('Note', noteSchema);
+export const Note = mongoose.model('Note', noteSchema);

@@ -2,9 +2,9 @@ import express from 'express';
 import 'dotenv/config';
 import cors from 'cors';
 
-import { connect } from 'mongoose';
+
 import { connectMongoDB } from './db/connectMongoDB.js';
-import logger from './middleware/logger.js';
+import { logger } from './middleware/logger.js';
 import { notFoundHandler } from './middleware/notFoundHandler.js';
 import { errorHandler } from './middleware/errorHandler.js';
 import notesRoutes from './routes/notesRoutes.js';
@@ -27,7 +27,7 @@ app.use(cors({
 
 
 
-app.use("/notes",notesRoutes);
+app.use(notesRoutes);
 app.use(notFoundHandler);
 app.use(errorHandler);
 
@@ -35,5 +35,5 @@ app.use(errorHandler);
 await connectMongoDB();
 
 app.listen(PORT, () => {
-  console.log(`Server is running on localhost:${process.env.PORT}`);
+  console.log(`Server is running on localhost:${PORT}`);
 });
