@@ -13,8 +13,11 @@ export const getAllNotes = async (req, res) => {
     }
 
     if (search) {
-        filter.$text = { $search: search };
-    }
+    filter.$or = [
+      { title: { $regex: search, $options: 'i' } },
+      { content: { $regex: search, $options: 'i' } },
+    ];
+  }
 
     const notesQuery = Note.find(filter);
      const [totalNotes, notes] = await Promise.all([
