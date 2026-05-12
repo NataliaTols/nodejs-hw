@@ -54,7 +54,7 @@ export const getNoteById = async (req, res) => {
 //CREATE
 export const createNote = async (req, res) => {
     const { title, content, tag } = req.body;
-    const newNote = new Note({ title, content });
+    const newNote = new Note({ title, content, tag });
     await newNote.save();
     res.status(201).json(newNote);
 };
@@ -62,8 +62,8 @@ export const createNote = async (req, res) => {
 //UPDATE
 export const updateNote = async (req, res) => {
     const { noteId } = req.params;
-    const { title, content } = req.body;
-    const updatedNote = await Note.findByIdAndUpdate(noteId, { title, content }, { returnDocument: 'after' });
+    const { title, content, tag } = req.body;
+    const updatedNote = await Note.findByIdAndUpdate(noteId, { title, content, tag }, { returnDocument: 'after' });
     if (!updatedNote) {
         throw createHttpError(404, 'Note not found');
     }
