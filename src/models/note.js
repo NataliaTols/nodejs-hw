@@ -28,8 +28,8 @@ const noteSchema = new Schema({
 );
 
 noteSchema.index({
-    title: 'text',
-    content: 'text',
+    userId: 1,
+    tag: 1,
 });
 noteSchema.index({ tag: 1 });
 
