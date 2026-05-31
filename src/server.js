@@ -33,7 +33,7 @@ app.use(cors({
 
 app.use(notesRoutes);
 app.use(authRoutes);
-
+app.use(userRoutes);
 app.use(notFoundHandler);
 
 app.use(errors());
