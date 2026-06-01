@@ -6,7 +6,7 @@ import fs from 'fs/promises';
 import handlebars from 'handlebars';
 import { createSession, setSessionCookies } from '../services/auth.js';
 import { Session } from '../models/session.js';
-import sendMail from '../utils/sendMail.js';
+import { sendEmail } from '../utils/sendMail.js';
 
 
 //      -----------REGISTER-----------
@@ -139,11 +139,16 @@ export const requestResetEmail = async (req, res) => {
     link: `${process.env.FRONTEND_DOMAIN}/reset-password?token=${resetToken}`,
   });
 
-  await sendMail({
-    to: user.email,
-    subject: 'Password reset request',
-    html,
-  });
+  try {
+    await sendEmail({
+      from: process.env.SMTP_FROM,
+      to: user.email,
+      subject: 'Password reset request',
+      html,
+    });
+  } catch (error) {
+    throw createHttpError(500, 'Failed to send password reset email');
+  }
 
   res.status(200).json({
     message: 'Password reset email sent successfully',

@@ -10,13 +10,15 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-const sendMail = async ({ to, subject, html }) => {
-  await transporter.sendMail({
-    from: process.env.SMTP_FROM,
+export const sendEmail = async ({ from, to, subject, html }) => {
+  if (!from) {
+    throw new Error('Missing email sender');
+  }
+
+  return transporter.sendMail({
+    from,
     to,
     subject,
     html,
   });
 };
-
-export default sendMail;
